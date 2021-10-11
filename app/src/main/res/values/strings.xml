@@ -10,13 +10,16 @@
     <string name="password_hint">Пароль</string>
     <string name="repeat_password_hint">Повторите пароль</string>
     <string name="nick_or_name_hint">Имя или никнейм</string>
-    <string name="gender_hint">Пол</string>
+    <string name="gender_hint">Выберите пол</string>
     <string name="button_text_continue">Продолжить</string>
     <string name="user_agreement_p1">Нажимая на кнопку, вы соглашаетесь с </string>
     <string name="user_agreement_p2">политикой конфиденциальности</string>
     <string name="user_agreement_p3"> и обработки персональных данных, а также принимаете </string>
     <string name="user_agreement_p4">пользовательское соглашение</string>
-    <string name="user_agreement">Нажимая на кнопку, вы соглашаетесь с политикой конфиденциальности и обработки персональных данных, а также принимаете пользовательское соглашение</string>
+    <string name="user_agreement">Нажимая на кнопку, вы соглашаетесь с
+        <a href="#">политикой конфиденциальности</a> и обработки персональных данных
+        , а также принимаете <a href="#">пользовательское соглашение</a>
+    </string>
     <string name="activity_content_description">ACTIVITY</string>
     <string name="login_text">Вход</string>
 </resources>
