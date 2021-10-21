@@ -2,12 +2,9 @@ package ru.fefu.activitytracker
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.SpannableString
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.ImageView
-import androidx.core.text.buildSpannedString
-import androidx.core.text.set
 
 class RegistrationScreen : AppCompatActivity() {
 
@@ -15,12 +12,11 @@ class RegistrationScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registration_screen)
 
-        val backButton = findViewById<ImageView>(R.id.ArrowBack)
-        backButton.setOnClickListener {
-            finish()
-        }
+        backOnClick()
+        createDropDownMenu()
+    }
 
-
+    private fun createDropDownMenu() {
         val genderCompleteTextView = findViewById<AutoCompleteTextView>(R.id.GenderDropDown)
         val genderList = arrayListOf("Male", "Female")
         val genderAdapter = ArrayAdapter(
@@ -30,7 +26,12 @@ class RegistrationScreen : AppCompatActivity() {
         )
         genderCompleteTextView.setAdapter(genderAdapter)
         genderCompleteTextView.threshold = 0
+    }
 
-
+    private fun backOnClick() {
+        val backButton = findViewById<ImageView>(R.id.ArrowBack)
+        backButton.setOnClickListener {
+            finish()
+        }
     }
 }
