@@ -4,7 +4,7 @@
     android:id="@+id/activity_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ActivityFragment">
+    tools:context=".CollectionAdapterFragment">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/activity_tab_layout"

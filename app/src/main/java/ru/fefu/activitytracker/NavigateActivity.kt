@@ -2,17 +2,12 @@ package ru.fefu.activitytracker
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TableLayout
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.tabs.TabLayout
 
 
 class NavigateActivity : AppCompatActivity() {
     private var bottomNavigation: BottomNavigationView? = null
 
-    private var isCreated: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +19,7 @@ class NavigateActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction().apply {
                 add(
                     R.id.activity_container,
-                    ActivityFragment.newInstance(
+                    CollectionAdapterFragment.newInstance(
                         "Start activityFragment",
                         "activity_fragment"
                     ),
@@ -33,43 +28,10 @@ class NavigateActivity : AppCompatActivity() {
                 commit()
             }
         }
-
         bottomNavigationSelector()
-
     }
 
-    override fun onStart() {
-        super.onStart()
 
-        if (!isCreated) {
-            val tabLayout = findViewById<TabLayout>(R.id.activity_tab_layout)
-            val pager = findViewById<ViewPager2>(R.id.activity_pager)
-            val adapter = ActivitiesCollections(supportFragmentManager, lifecycle)
-            pager.adapter = adapter
-
-            tabLayout.addTab(tabLayout.newTab().setText(R.string.tab_layout_activity_my))
-            tabLayout.addTab(tabLayout.newTab().setText(R.string.tab_layout_activity_users))
-
-            tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                override fun onTabSelected(tab: TabLayout.Tab?) {
-                    tab?.let { pager.currentItem = it.position }
-                }
-
-                override fun onTabUnselected(tab: TabLayout.Tab?) {
-                }
-
-                override fun onTabReselected(tab: TabLayout.Tab?) {
-                }
-            })
-
-            pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    tabLayout.selectTab(tabLayout.getTabAt(position))
-                }
-            })
-            isCreated = true
-        }
-    }
 
     private fun bottomNavigationSelector() {
         bottomNavigation?.setOnItemSelectedListener { item ->
@@ -80,7 +42,7 @@ class NavigateActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction().apply {
                         add(
                             R.id.activity_container,
-                            ActivityFragment.newInstance(
+                            CollectionAdapterFragment.newInstance(
                                 "Start activityFragment",
                                 "activity_fragment"
                             ),
