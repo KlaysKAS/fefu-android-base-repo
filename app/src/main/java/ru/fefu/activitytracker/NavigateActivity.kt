@@ -8,7 +8,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class NavigateActivity : AppCompatActivity() {
     private var bottomNavigation: BottomNavigationView? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_navigate)
@@ -19,10 +18,7 @@ class NavigateActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction().apply {
                 add(
                     R.id.activity_container,
-                    CollectionAdapterFragment.newInstance(
-                        "Start activityFragment",
-                        "activity_fragment"
-                    ),
+                    CollectionAdapterFragment.newInstance(),
                     "activity_fragment"
                 )
                 commit()
@@ -30,7 +26,6 @@ class NavigateActivity : AppCompatActivity() {
         }
         bottomNavigationSelector()
     }
-
 
 
     private fun bottomNavigationSelector() {
@@ -42,10 +37,7 @@ class NavigateActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction().apply {
                         add(
                             R.id.activity_container,
-                            CollectionAdapterFragment.newInstance(
-                                "Start activityFragment",
-                                "activity_fragment"
-                            ),
+                            CollectionAdapterFragment.newInstance(),
                             "activity_fragment"
                         )
                         if (profileFragment != null)
@@ -60,10 +52,7 @@ class NavigateActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction().apply {
                         add(
                             R.id.activity_container,
-                            ProfileFragment.newInstance(
-                                "Start profileFragment",
-                                "profile_fragment"
-                            ),
+                            ProfileFragment.newInstance(),
                             "profile_fragment"
                         )
                         if (activityFragment != null)
