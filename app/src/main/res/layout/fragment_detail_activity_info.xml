@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/detailed_activity_my_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DetailActivityInfoFragment"
+    android:background="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/detailed_activity_my_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp">
+
+                <ImageButton
+                    android:id="@+id/detailed_activity_my_arrowBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:foregroundGravity="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_arrow_back" />
+
+                <TextView
+                    android:id="@+id/detailed_activity_my_toolbarText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:foregroundGravity="center"
+                    android:text="@string/detailed_toolbar_text"
+                    android:textColor="@color/black"
+                    android:textSize="30sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/detailed_activity_my_arrowBack" />
+
+                <ImageButton
+                    android:id="@+id/detailed_activity_my_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:src="@drawable/ic_delete"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/detailed_activity_my_share"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/detailed_activity_my_share"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:src="@drawable/ic_share"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <TextView
+            android:id="@+id/detailed_activity_my_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="40dp"
+            android:text="14.32 км"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detailed_activity_my_toolbar" />
+
+        <TextView
+            android:id="@+id/detailed_activity_users_userdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#004DF6"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/detailed_activity_my_distance"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/detailed_activity_my_distance"
+            android:layout_marginEnd="40dp"/>
+
+        <TextView
+            android:id="@+id/detailed_activity_my_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="14 часов назад"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="@+id/detailed_activity_my_distance"
+            app:layout_constraintTop_toBottomOf="@+id/detailed_activity_my_distance" />
+
+
+        <TextView
+            android:id="@+id/detailed_activity_my_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="30dp"
+            android:text="1 ч 42 мин"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detailed_activity_my_date" />
+
+        <TextView
+            android:id="@+id/detailed_activity_my_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/detailed_activity_my_start"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="@+id/detailed_activity_my_duration"
+            app:layout_constraintTop_toBottomOf="@+id/detailed_activity_my_duration" />
+
+        <TextView
+            android:id="@+id/detailed_activity_my_startTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="14:49"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/detailed_activity_my_start"
+            app:layout_constraintStart_toEndOf="@+id/detailed_activity_my_start"
+            app:layout_constraintTop_toTopOf="@+id/detailed_activity_my_start" />
+
+        <TextView
+            android:id="@+id/detailed_activity_my_separator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="@string/detailed_activity_my_separator"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/detailed_activity_my_start"
+            app:layout_constraintStart_toEndOf="@+id/detailed_activity_my_startTime"
+            app:layout_constraintTop_toTopOf="@+id/detailed_activity_my_start" />
+
+        <TextView
+            android:id="@+id/detailed_activity_my_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="@string/detailed_activity_my_end"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/detailed_activity_my_separator"
+            app:layout_constraintStart_toEndOf="@+id/detailed_activity_my_separator"
+            app:layout_constraintTop_toTopOf="@+id/detailed_activity_my_separator" />
+
+        <TextView
+            android:id="@+id/detailed_activity_my_endTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="16:31"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/detailed_activity_my_end"
+            app:layout_constraintStart_toEndOf="@+id/detailed_activity_my_end"
+            app:layout_constraintTop_toTopOf="@+id/detailed_activity_my_end" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/detailed_activity_my_commentInput"
+            style="@style/TextInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="40dp"
+            android:layout_marginTop="40dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detailed_activity_my_start">
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/comment_hint" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</FrameLayout>

@@ -4,13 +4,17 @@
     android:id="@+id/users_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UsersActivityFragment">
+    tools:context=".UsersActivityPackage.UsersActivityFragment">
 
-    <TextView
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/detailed_users_activity_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/users_activity_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="UsersActivityFragment"
-        android:textSize="20sp" />
+        tools:listitem="@layout/users_activity_card" />
 
 </FrameLayout>
