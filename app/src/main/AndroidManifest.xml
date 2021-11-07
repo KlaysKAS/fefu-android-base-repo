@@ -22,10 +22,10 @@
             android:name=".LoginScreen"
             android:exported="true" />
         <activity
-            android:name=".RegistrationScreen"
+            android:name=".WelcomeRegLogin.RegistrationScreen"
             android:exported="true" />
         <activity
-            android:name=".WelcomeScreen"
+            android:name=".WelcomeRegLogin.WelcomeScreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

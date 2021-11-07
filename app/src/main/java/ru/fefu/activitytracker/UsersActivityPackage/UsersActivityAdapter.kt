@@ -10,11 +10,14 @@ import ru.fefu.activitytracker.DateActivityPackage.DateActivityHolder
 import ru.fefu.activitytracker.MyActivityPackage.MyActivityAdapter
 import ru.fefu.activitytracker.R
 
-class UsersActivityAdapter(
-    private val data: List<CardAbstract>,
-    private val onItemListener: MyActivityAdapter.OnItemListener
-) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>(), View.OnClickListener {
+class UsersActivityAdapter(private val data: List<CardAbstract>) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var ItemClickListener: (Int) -> Unit = {}
+
+    fun setItemClickListener(listener: (Int) -> Unit) {
+        ItemClickListener = listener
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -35,10 +38,8 @@ class UsersActivityAdapter(
         when (getItemViewType(position)) {
             ITEM_TYPE_ACTIVITY -> {
                 (holder as UsersActivityHolder).bind(data[position])
-                holder.itemView.setOnClickListener(this)
             }
             else -> (holder as DateActivityHolder).bind(data[position])
-
         }
     }
 
@@ -56,7 +57,28 @@ class UsersActivityAdapter(
         private const val ITEM_TYPE_DATE = 1
     }
 
-    override fun onClick(p0: View?) {
-        onItemListener.onItemClick(p0!!.findViewById<TextView>(R.id.users_activity_card_username).text.toString())
+    inner class UsersActivityHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val ivDistance: TextView = itemView.findViewById(R.id.users_activity_card_distance)
+        private val ivUsername: TextView = itemView.findViewById(R.id.users_activity_card_username)
+        private val ivDuration: TextView = itemView.findViewById(R.id.users_activity_card_duration)
+        private val ivType: TextView = itemView.findViewById(R.id.users_activity_card_type)
+        private val ivDate: TextView = itemView.findViewById(R.id.users_activity_card_date)
+
+        init {
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION)
+                    ItemClickListener.invoke(position)
+            }
+        }
+
+        fun bind(item: CardAbstract) {
+            item as UsersActivityData
+            ivDistance.text = item.distance
+            ivUsername.text = item.username
+            ivDuration.text = item.duration
+            ivType.text = item.type
+            ivDate.text = item.date
+        }
     }
 }

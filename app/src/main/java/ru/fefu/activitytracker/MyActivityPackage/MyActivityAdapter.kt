@@ -9,11 +9,14 @@ import ru.fefu.activitytracker.CardAbstract
 import ru.fefu.activitytracker.DateActivityPackage.DateActivityHolder
 import ru.fefu.activitytracker.R
 
-class MyActivityAdapter(
-    private val data: List<CardAbstract>,
-    private val onItemListener: OnItemListener
-) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>(), View.OnClickListener {
+class MyActivityAdapter(private val data: List<CardAbstract>) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var ItemClickListener: (Int) -> Unit = {}
+
+    fun setItemClickListener(listener: (Int) -> Unit) {
+        ItemClickListener = listener
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -34,7 +37,6 @@ class MyActivityAdapter(
         when (getItemViewType(position)) {
             ITEM_TYPE_ACTIVITY -> {
                 (holder as MyActivityHolder).bind(data[position])
-                holder.itemView.setOnClickListener(this)
             }
             else -> {
                 (holder as DateActivityHolder).bind(data[position])
@@ -57,12 +59,27 @@ class MyActivityAdapter(
         private const val ITEM_TYPE_DATE = 1
     }
 
-    interface OnItemListener {
-        fun onItemClick(user: String = "")
-        fun onItemBack()
+    inner class MyActivityHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val ivDistance: TextView = itemView.findViewById(R.id.my_activity_card_distance)
+        private val ivDuration: TextView = itemView.findViewById(R.id.my_activity_card_duration)
+        private val ivType: TextView = itemView.findViewById(R.id.my_activity_card_type)
+        private val ivDate: TextView = itemView.findViewById(R.id.my_activity_card_date)
+
+        init {
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION)
+                    ItemClickListener(position)
+            }
+        }
+
+        fun bind(item: CardAbstract) {
+            item as MyActivityData
+            ivDistance.text = item.distance
+            ivDuration.text = item.duration
+            ivType.text = item.type
+            ivDate.text = item.date
+        }
     }
 
-    override fun onClick(p0: View?) {
-        onItemListener.onItemClick()
-    }
 }
