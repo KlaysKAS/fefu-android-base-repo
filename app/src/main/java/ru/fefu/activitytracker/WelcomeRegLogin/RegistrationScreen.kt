@@ -1,10 +1,11 @@
-package ru.fefu.activitytracker
+package ru.fefu.activitytracker.WelcomeRegLogin
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.ImageView
+import ru.fefu.activitytracker.R
 
 class RegistrationScreen : AppCompatActivity() {
 

@@ -4,14 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TableLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import ru.fefu.activitytracker.DetailActivity.ActivitiesFragmentManager
+import ru.fefu.activitytracker.MyActivityPackage.MyActivityAdapter
+import ru.fefu.activitytracker.MyActivityPackage.MyActivityFragment
+import ru.fefu.activitytracker.UsersActivityPackage.UsersActivityFragment
 
-class CollectionAdapterFragment : Fragment() {
+class CollectionAdapterFragment : Fragment(), ActivitiesFragmentManager {
     private lateinit var activityCollectionAdapter: ActivityCollectionAdapter
     private lateinit var viewPager: ViewPager2
     private lateinit var tabLayout: TabLayout
@@ -44,16 +48,13 @@ class CollectionAdapterFragment : Fragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         *
-         * @return A new instance of fragment CollectionAdapterFragment.
-         */
         @JvmStatic
         fun newInstance() = CollectionAdapterFragment()
     }
+
+    override fun getActivitiesFragmentManager(): FragmentManager =
+        (parentFragment as ActivitiesFragmentManager)
+            .getActivitiesFragmentManager()
 }
 
 class ActivityCollectionAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
