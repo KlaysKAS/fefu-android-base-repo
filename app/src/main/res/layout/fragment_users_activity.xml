@@ -4,7 +4,7 @@
     android:id="@+id/users_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UsersActivityPackage.UsersActivityFragment">
+    tools:context=".usersActivityPackage.UsersActivityFragment">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/detailed_users_activity_container"
