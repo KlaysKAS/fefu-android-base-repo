@@ -10,7 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Activity">
         <activity
-            android:name=".NavigateActivity"
+            android:name=".newActivity.NewActivityActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.NavigateActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,13 +22,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginScreen"
+            android:name=".welcomeRegLogin.LoginScreen"
             android:exported="true" />
         <activity
-            android:name=".WelcomeRegLogin.RegistrationScreen"
+            android:name=".welcomeRegLogin.RegistrationScreen"
             android:exported="true" />
         <activity
-            android:name=".WelcomeRegLogin.WelcomeScreen"
+            android:name=".welcomeRegLogin.WelcomeScreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
