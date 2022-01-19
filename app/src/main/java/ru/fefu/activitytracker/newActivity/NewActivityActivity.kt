@@ -3,12 +3,8 @@ package ru.fefu.activitytracker.newActivity
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.FragmentManager
-import androidx.recyclerview.widget.RecyclerView
-import ru.fefu.activitytracker.NewActivityChooseFragment
 import ru.fefu.activitytracker.ParentFragmentManager
 import ru.fefu.activitytracker.R
 
