@@ -39,7 +39,7 @@ class NewActivityCreateFragment : Fragment() {
                 App.INSTANCE.db.activityDao().insert(
                     Activities(
                         id = 0,
-                        userName = App.username,
+                        userName = "",
                         type = type_id,
                         dateStart = millisEnd - Random.nextLong(600000, 60000000),
                         dateEnd = millisEnd,

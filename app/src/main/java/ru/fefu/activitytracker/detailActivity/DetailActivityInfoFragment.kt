@@ -58,7 +58,7 @@ class DetailActivityInfoFragment(private val data: ActivityData) : Fragment(R.la
         dateEndView?.text = endTime
         durationView?.text = data.duration
         comment?.hint = data.comment
-        if (data.user == App.username) {
+        if (data.user == "") {
             toolbar.inflateMenu(R.menu.toolbar_detailed_activity_menu)
             comment?.isEnabled = true
         } else {

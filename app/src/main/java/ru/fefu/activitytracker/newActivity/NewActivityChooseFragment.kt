@@ -8,9 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
 import ru.fefu.activitytracker.ActivitiesEnum
-import ru.fefu.activitytracker.BlankFragment
 import ru.fefu.activitytracker.R
-import java.text.FieldPosition
 
 class NewActivityChooseFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
