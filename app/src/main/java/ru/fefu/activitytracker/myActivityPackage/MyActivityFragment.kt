@@ -54,6 +54,7 @@ class MyActivityFragment : Fragment() {
                 val distance = "5 км"
                 activities.add(
                     ActivityData(
+                        id = activity.id,
                         distance = distance,
                         type = type,
                         date_start = startDate,
@@ -77,7 +78,7 @@ class MyActivityFragment : Fragment() {
                     .apply {
                         replace(
                             R.id.activity_flow_container,
-                            DetailActivityInfoFragment.newInstance(dataList[pos] as ActivityData),
+                            DetailActivityInfoFragment.newInstance((dataList[pos] as ActivityData).id, 0),
                             "detailedActivity"
                         )
                         addToBackStack(null)

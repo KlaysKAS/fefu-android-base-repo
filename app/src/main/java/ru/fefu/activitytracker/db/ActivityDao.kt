@@ -12,4 +12,7 @@ interface ActivityDao {
 
     @Insert
     fun insert(activity: Activities)
+
+    @Query("SELECT * FROM activities WHERE id =:id")
+    fun getActivityById(id: Int): Activities
 }
