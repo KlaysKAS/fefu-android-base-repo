@@ -11,6 +11,7 @@ import ru.fefu.activitytracker.dateActivityPackage.DateActivityData
 import ru.fefu.activitytracker.ParentFragmentManager
 import ru.fefu.activitytracker.detailActivity.DetailActivityInfoFragment
 import ru.fefu.activitytracker.R
+import ru.fefu.activitytracker.myActivityPackage.ActivityData
 
 class UsersActivityFragment  : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -58,20 +59,19 @@ class UsersActivityFragment  : Fragment() {
         )
         recyclerView.adapter = adapter
         adapter.setItemClickListener {
-            (parentFragment as ParentFragmentManager).getActivitiesFragmentManager()
-                .beginTransaction()
-                .apply {
-                    replace(
-                        R.id.activity_flow_container,
-                        DetailActivityInfoFragment.newInstance(
-                            username = (dataList[it] as UsersActivityData).username,
-                            commentText = (dataList[it] as UsersActivityData).comment,
-                            isMyActivity = false
+            if (it in dataList.indices) {
+                val pos = it
+                (parentFragment as ParentFragmentManager).getActivitiesFragmentManager()
+                    .beginTransaction()
+                    .apply {
+                        replace(
+                            R.id.activity_flow_container,
+                            DetailActivityInfoFragment.newInstance(pos - 1, 1)
                         )
-                    )
-                    addToBackStack(null)
-                    commit()
-                }
+                        addToBackStack(null)
+                        commit()
+                    }
+            }
         }
     }
 

@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.textfield.TextInputEditText
-
+                    android:id="@+id/LoginInputText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/login_hint" />
@@ -81,7 +81,7 @@
                 app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
-
+                    android:id="@+id/PasswordInputText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/password_hint"
@@ -97,6 +97,7 @@
                 app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/RepeatPasswordInputText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/repeat_password_hint"
@@ -105,13 +106,13 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-
                 android:id="@+id/NameInput"
                 style="@style/TextInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/NameInputText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/nick_or_name_hint" />
@@ -120,7 +121,6 @@
 
 
             <com.google.android.material.textfield.TextInputLayout
-
                 android:id="@+id/Gender"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
@@ -137,6 +137,7 @@
 
 
             <Button
+                android:id="@+id/registration_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -146,6 +147,14 @@
                 android:theme="@style/button" />
 
             <TextView
+                android:id="@+id/errors_registration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/error"
+                />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -153,7 +162,6 @@
                 android:gravity="center"
                 android:text="@string/user_agreement"
                 android:textSize="17sp" />
-
 
         </LinearLayout>
     </ScrollView>

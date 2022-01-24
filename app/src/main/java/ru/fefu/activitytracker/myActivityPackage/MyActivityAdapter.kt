@@ -1,5 +1,6 @@
 package ru.fefu.activitytracker.myActivityPackage
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.fefu.activitytracker.activities.CardAbstract
 import ru.fefu.activitytracker.dateActivityPackage.DateActivityHolder
 import ru.fefu.activitytracker.R
+import java.time.LocalDateTime
 
 class MyActivityAdapter(private val data: List<CardAbstract>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -49,7 +51,7 @@ class MyActivityAdapter(private val data: List<CardAbstract>) :
 
     override fun getItemViewType(position: Int): Int {
         return when (data[position]) {
-            is MyActivityData -> ITEM_TYPE_ACTIVITY
+            is ActivityData -> ITEM_TYPE_ACTIVITY
             else -> ITEM_TYPE_DATE
         }
     }
@@ -73,12 +75,16 @@ class MyActivityAdapter(private val data: List<CardAbstract>) :
             }
         }
 
+        @SuppressLint("SetTextI18n")
         fun bind(item: CardAbstract) {
-            item as MyActivityData
+            item as ActivityData
             ivDistance.text = item.distance
             ivDuration.text = item.duration
             ivType.text = item.type
-            ivDate.text = item.date
+            ivDate.text =
+                "%02d".format(item.date_end.dayOfMonth) +
+                "." +
+                "%02d".format(item.date_start.monthValue)
         }
     }
 

@@ -5,12 +5,20 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import ru.fefu.activitytracker.App
 import ru.fefu.activitytracker.R
+import ru.fefu.activitytracker.activities.NavigateActivity
 
 class WelcomeScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome_screen)
+
+        if (App.getToken() != "") {
+            val intent = Intent(this, NavigateActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
 
         registrationOnClick()
         loginOnClick()

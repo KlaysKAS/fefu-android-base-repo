@@ -14,6 +14,7 @@ import ru.fefu.activitytracker.R
 class NewActivityAdapter(private val data: List<NewActivityData>) :
     RecyclerView.Adapter<NewActivityAdapter.NewActivityHolder>() {
     private var items = mutableListOf<View>()
+    var selected = -1
 
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewActivityAdapter.NewActivityHolder {
@@ -35,8 +36,15 @@ class NewActivityAdapter(private val data: List<NewActivityData>) :
 
         init {
             itemView.setOnClickListener {
+                var count = 0
                 items.forEach { views ->
-                    views.isSelected = it == views
+                    if (views == it) {
+                        selected = count
+                        views.isSelected = true
+                    }
+                    else
+                        views.isSelected = false
+                    count += 1
                 }
             }
         }
