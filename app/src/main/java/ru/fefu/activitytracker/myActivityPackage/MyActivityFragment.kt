@@ -17,9 +17,12 @@ import ru.fefu.activitytracker.ParentFragmentManager
 import ru.fefu.activitytracker.detailActivity.DetailActivityInfoFragment
 import ru.fefu.activitytracker.R
 import ru.fefu.activitytracker.activities.CardAbstract
+import ru.fefu.activitytracker.db.entity.Coordinates
+import ru.fefu.activitytracker.gps.CoordToDistance
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import kotlin.math.roundToInt
 
 class MyActivityFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -43,18 +46,17 @@ class MyActivityFragment : Fragment() {
             dataList.clear()
             for (activity in it) {
                 val startDate = LocalDateTime.ofInstant(
-                    Instant.ofEpochMilli(activity.dateStart),
+                    Instant.ofEpochMilli(activity.activity.dateStart),
                     ZoneId.systemDefault()
                 )
                 val endDate = LocalDateTime.ofInstant(
-                    Instant.ofEpochMilli(activity.dateEnd),
+                    Instant.ofEpochMilli(activity.activity.dateEnd!!),
                     ZoneId.systemDefault()
                 )
-                val type = ActivitiesEnum.values()[activity.type].type
-                val distance = "5 км"
+                val type = ActivitiesEnum.values()[activity.activity.type].type
                 activities.add(
                     ActivityData(
-                        distance = distance,
+                        distance = getDistanceFromCoordinates(activity.coordinates),
                         type = type,
                         date_start = startDate,
                         date_end = endDate,
@@ -108,6 +110,13 @@ class MyActivityFragment : Fragment() {
             }
             dataList.add(it)
         }
+    }
+
+    private fun getDistanceFromCoordinates(coords: List<Coordinates>): String {
+        val dist = CoordToDistance.getDistanceFromLatLonInM(coords)
+        if (dist < 1000)
+            return "${dist.roundToInt()} м"
+        return "%.1f км".format(dist / 1000.0)
     }
 
     companion object {
