@@ -52,7 +52,10 @@ class App: Application() {
             this,
             MyDB::class.java,
             "my_database"
-        ).allowMainThreadQueries().build()
+        )
+            .allowMainThreadQueries()
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     override fun onCreate() {
