@@ -29,6 +29,9 @@ interface ActivityDao {
     @Query("DELETE FROM activities WHERE date_end IS NULL")
     fun dropUnfinishedActivities()
 
+    @Query("SELECT * FROM activities WHERE id = :id")
+    fun getActivityById(id: Int): ActivityAndCoordinates
+
     @Query("DELETE FROM coordinates")
     fun dropCoordinates()
 

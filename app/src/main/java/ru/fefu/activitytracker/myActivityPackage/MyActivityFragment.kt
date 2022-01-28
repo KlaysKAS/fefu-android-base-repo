@@ -19,6 +19,7 @@ import ru.fefu.activitytracker.R
 import ru.fefu.activitytracker.activities.CardAbstract
 import ru.fefu.activitytracker.db.entity.Coordinates
 import ru.fefu.activitytracker.gps.CoordToDistance
+import java.lang.Long.max
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -56,12 +57,14 @@ class MyActivityFragment : Fragment() {
                 val type = ActivitiesEnum.values()[activity.activity.type].type
                 activities.add(
                     ActivityData(
-                        id = activity.id,
+                        id = activity.activity.id,
                         distance = getDistanceFromCoordinates(activity.coordinates),
                         type = type,
                         date_start = startDate,
                         date_end = endDate,
-                        duration = "12 ч"
+                        duration = setDuration(
+                            max(0, (activity.activity.dateEnd - activity.activity.dateStart))
+                        )
                     )
                 )
             }
@@ -89,6 +92,16 @@ class MyActivityFragment : Fragment() {
             }
         }
     }
+
+    private fun setDuration(time: Long): String {
+        val seconds = time / 1000
+        val hour = seconds / 3600
+        val minute = (seconds % 3600) / 60
+        val second = seconds % 60
+        return "${twoDigitStr(hour)}:${twoDigitStr(minute)}:${twoDigitStr(second)}"
+    }
+
+    fun twoDigitStr(n: Long) = if (n in 0..9) "0$n" else "$n"
 
     fun createDate(activities: List<ActivityData>) {
         val currentDate = LocalDateTime.now()
