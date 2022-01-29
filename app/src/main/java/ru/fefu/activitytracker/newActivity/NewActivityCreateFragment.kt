@@ -1,5 +1,6 @@
 package ru.fefu.activitytracker.newActivity
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -57,8 +58,12 @@ class NewActivityCreateFragment : Fragment() {
 
         val finishButton: ImageButton = view.findViewById(R.id.new_activity_finish)
         finishButton.setOnClickListener {
-            finishActivity()
-            parentFragmentManager.popBackStack()
+//            finishActivity()
+//            parentFragmentManager.popBackStack()
+            val intent = Intent(activity, NewActivityService::class.java).apply {
+                action = NewActivityService.ACTION_CANCEL
+            }
+            activity?.startService(intent)
         }
     }
 

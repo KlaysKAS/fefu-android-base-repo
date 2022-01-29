@@ -144,14 +144,6 @@ class NewActivityActivity : AppCompatActivity(), ParentFragmentManager, LocListe
     override fun onLocationChanged(loc: Location) {
         curId = App.INSTANCE.db.activityDao().getLastActivity()?.id?:-1
         if (curId > -1) {
-            App.INSTANCE.db.activityDao().insertCoordinates(
-                Coordinates(
-                    0,
-                    curId,
-                    loc.longitude,
-                    loc.latitude
-                )
-            )
             polyline.addPoint(GeoPoint(loc))
         }
         lastLocation = loc
