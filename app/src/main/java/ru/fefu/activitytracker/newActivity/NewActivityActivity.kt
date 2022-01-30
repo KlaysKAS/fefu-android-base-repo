@@ -5,15 +5,15 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.location.Location
-import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.FragmentManager
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
@@ -22,7 +22,6 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsResponse
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
-import org.osmdroid.tileprovider.tilesource.BitmapTileSourceBase
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -33,17 +32,9 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import ru.fefu.activitytracker.App
 import ru.fefu.activitytracker.ParentFragmentManager
 import ru.fefu.activitytracker.R
-import ru.fefu.activitytracker.db.entity.Coordinates
-import ru.fefu.activitytracker.gps.LocListener
-import ru.fefu.activitytracker.gps.LocListenerInterface
-import kotlin.math.roundToInt
 
-class NewActivityActivity : AppCompatActivity(), ParentFragmentManager, LocListenerInterface {
-    private var distance: Double = 0.0
-    private var curId = -1
-    private lateinit var locationManager: LocationManager
-    private lateinit var locationListener: LocListener
-    private var lastLocation: Location? = null
+class NewActivityActivity : AppCompatActivity(), ParentFragmentManager {
+    private var lastChecked = -1
 
     private val polyline by lazy {
         Polyline().apply {
@@ -59,8 +50,6 @@ class NewActivityActivity : AppCompatActivity(), ParentFragmentManager, LocListe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_activity)
-//        App.INSTANCE.db.activityDao().dropUnfinishedActivities()
-//        App.INSTANCE.db.activityDao().dropCoordinates()
         init()
 
         supportFragmentManager.beginTransaction().apply {
@@ -107,18 +96,13 @@ class NewActivityActivity : AppCompatActivity(), ParentFragmentManager, LocListe
         }
         else {
             checkGPSEnabled {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000L, 4f, locationListener)
                 showUserLoc()
+                startTrack()
             }
         }
     }
 
     private fun init() {
-        // GPS
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationListener = LocListener()
-        locationListener.setLocListenerI(this)
-
         // MAP
         Configuration.getInstance().load(this, getPreferences(Context.MODE_PRIVATE))
         map = findViewById(R.id.map_new_activity)
@@ -140,16 +124,8 @@ class NewActivityActivity : AppCompatActivity(), ParentFragmentManager, LocListe
         map.overlayManager.add(polyline)
     }
 
-    @SuppressLint("SetTextI18n")
-    override fun onLocationChanged(loc: Location) {
-        curId = App.INSTANCE.db.activityDao().getLastActivity()?.id?:-1
-        if (curId > -1) {
-            polyline.addPoint(GeoPoint(loc))
-        }
-        lastLocation = loc
-        Log.i("DISTANCE", distance.toString())
-    }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     fun showUserLoc() {
         val locationOverlay = MyLocationNewOverlay(
             object: GpsMyLocationProvider(applicationContext) {
@@ -171,7 +147,8 @@ class NewActivityActivity : AppCompatActivity(), ParentFragmentManager, LocListe
             },
             map
         )
-        val locationIcon = BitmapFactory.decodeResource(resources, R.drawable.ic_user_location)
+        val drawable = getDrawable(R.drawable.ic_user_loc)
+        val locationIcon = drawable!!.toBitmap(width = 50, height = 80, config = null)
         locationOverlay.setDirectionArrow(locationIcon, locationIcon)
         locationOverlay.setPersonHotspot(locationIcon.width / 2f, locationIcon.height.toFloat())
         locationOverlay.enableMyLocation()
@@ -193,6 +170,25 @@ class NewActivityActivity : AppCompatActivity(), ParentFragmentManager, LocListe
                 Log.d("NewActivityActivity", "GPS is OFF")
                 it.printStackTrace()
             }
+    }
+
+    private fun startTrack() {
+        App.INSTANCE.db.activityDao().getIdUnfinishActivity().observe(this) { id ->
+            if (id != null && id > -1) {
+                NewActivityService.startForeground(this, id)
+                App.INSTANCE.db.activityDao().getCoords(id).observe(this) {
+                    if (lastChecked > -1) {
+                        for (i in lastChecked until it.size) {
+                            polyline.addPoint(GeoPoint(it[i].latitude, it[i].longitude))
+                            lastChecked++
+                        }
+                    }
+                    else {
+                        lastChecked = 0
+                    }
+                }
+            }
+        }
     }
 
     override fun onResume() {

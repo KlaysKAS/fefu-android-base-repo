@@ -15,7 +15,7 @@ data class Activities(
 @Entity
 data class Coordinates(
     @PrimaryKey(autoGenerate = true) val coordinate_id: Int,
-    @ColumnInfo(name = "activity_id") val activityId: Int,
+    @ColumnInfo(name = "activity_id") val activityId: Long,
     val longitude: Double,
     val latitude: Double,
 )

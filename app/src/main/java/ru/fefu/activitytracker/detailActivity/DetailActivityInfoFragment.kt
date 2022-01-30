@@ -134,7 +134,7 @@ class DetailActivityInfoFragment : Fragment(R.layout.fragment_detail_activity_in
                 .ofEpochMilli(activities.activity.dateEnd ?: 0)
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime()
-            val time = max(activities.activity.dateEnd ?: 0 - activities.activity.dateStart, 0)
+            val time = activities.activity.dateEnd!! - activities.activity.dateStart
 
             data = ActivityData(
                 id = activities.activity.id,
@@ -179,7 +179,8 @@ class DetailActivityInfoFragment : Fragment(R.layout.fragment_detail_activity_in
         val hour = seconds / 3600
         val minute = (seconds % 3600) / 60
         val second = seconds % 60
-        return "${twoDigitStr(hour)}:${twoDigitStr(minute)}:${twoDigitStr(second)}"
+        val str = "${twoDigitStr(hour)}:${twoDigitStr(minute)}:${twoDigitStr(second)}"
+        return str
     }
 
     fun twoDigitStr(n: Long) = if (n in 0..9) "0$n" else "$n"

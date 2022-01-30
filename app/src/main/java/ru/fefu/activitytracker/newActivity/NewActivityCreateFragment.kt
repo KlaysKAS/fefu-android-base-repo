@@ -16,7 +16,7 @@ import kotlin.math.roundToInt
 
 class NewActivityCreateFragment : Fragment() {
     private var type_id: Int = 0
-    private var activityId: Int = -1
+    private var activityId: Long = -1
     private var lastChecked = -1
 
     private lateinit var distanceView: TextView
@@ -53,13 +53,11 @@ class NewActivityCreateFragment : Fragment() {
             )
         }
         getCurActivity()
-        NewActivityService.startForeground(requireContext(), activityId)
-
 
         val finishButton: ImageButton = view.findViewById(R.id.new_activity_finish)
         finishButton.setOnClickListener {
-//            finishActivity()
-//            parentFragmentManager.popBackStack()
+            finishActivity()
+            parentFragmentManager.popBackStack()
             val intent = Intent(activity, NewActivityService::class.java).apply {
                 action = NewActivityService.ACTION_CANCEL
             }
@@ -82,7 +80,7 @@ class NewActivityCreateFragment : Fragment() {
     }
 
     private fun getCurActivity() {
-        activityId = App.INSTANCE.db.activityDao().getLastActivity()?.id ?: -1
+        activityId = App.INSTANCE.db.activityDao().getLastActivity() ?: -1
         if (activityId > -1) {
             App.INSTANCE.db.activityDao().getCoords(activityId).observe(viewLifecycleOwner) {
                 if (lastChecked > -1) {
@@ -113,5 +111,5 @@ class NewActivityCreateFragment : Fragment() {
         }
     }
 
-    fun Double.format(digits: Int) = "%.${digits}f".format(this)
+    private fun Double.format(digits: Int) = "%.${digits}f".format(this)
 }

@@ -1,12 +1,10 @@
 package ru.fefu.activitytracker.newActivity
 
 import android.annotation.SuppressLint
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
@@ -37,7 +35,8 @@ class NewActivityService : Service() {
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setSmallestDisplacement(20f)
 
-        fun startForeground(context: Context, id: Int) {
+        fun startForeground(context: Context, id: Long) {
+            Log.d("track", "service start")
             val intent = Intent(context, NewActivityService::class.java)
             intent.putExtra(EXTRA_ID, id)
             intent.action = ACTION_START
@@ -60,17 +59,17 @@ class NewActivityService : Service() {
         super.onStartCommand(intent, flags, startId)
         Log.d(TAG, "onStartCommand; ${intent?.getIntExtra(EXTRA_ID, -1)}")
         if (intent?.action == ACTION_CANCEL) {
-            val actId = App.INSTANCE.db.activityDao().getLastActivity()?.id?:-1
+            val actId = App.INSTANCE.db.activityDao().getLastActivity()?:-1
             if (actId > -1)
                 App.INSTANCE.db.activityDao().finishActivity(System.currentTimeMillis(), actId)
-            val intent = Intent(this, NavigateActivity::class.java)
-            startActivity(intent)
+            val intent2 = Intent(this, NavigateActivity::class.java)
+            startActivity(intent2)
             stopLocationUpdates()
             stopForeground(true)
             stopSelf()
             return START_NOT_STICKY
         } else if (intent?.action == ACTION_START) {
-            startLocationUpdates(intent.getIntExtra(EXTRA_ID, -1))
+            startLocationUpdates(intent.getLongExtra(EXTRA_ID, -1))
             return START_REDELIVER_INTENT
         }
         return START_NOT_STICKY
@@ -83,8 +82,9 @@ class NewActivityService : Service() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun startLocationUpdates(id: Int) {
-        if (id == -1) stopSelf()
+    private fun startLocationUpdates(id: Long) {
+        Log.d("track", "service loc update act, id: $id")
+        if (id == -1L) stopSelf()
         //check if permission denied then stopSelf
         locationCallback?.let { fusedLocationClient.removeLocationUpdates(it) }
         ActivityLocationCallback(id).apply {
@@ -120,27 +120,28 @@ class NewActivityService : Service() {
             PendingIntent.FLAG_IMMUTABLE
         )
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Boba")
+            .setContentTitle("ActivityTracker")
             .setContentText("Tracking your activity")
-            .setSmallIcon(R.drawable.ic_user_location)
+            .setSmallIcon(R.drawable.ic_user_loc)
             .setContentIntent(pendingIntent)
-            .addAction(R.drawable.ic_user_location, "Stop", cancelPendingIntent)
+            .addAction(R.drawable.ic_finish, "Stop", cancelPendingIntent)
             .build()
         startForeground(1, notification)
     }
 
     private fun createChannelIfNeeded() {
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            "Default channel",
-            NotificationManager.IMPORTANCE_LOW
-        )
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.createNotificationChannel(channel)
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Default channel",
+                NotificationManager.IMPORTANCE_LOW
+            )
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
+        }
     }
 
-    inner class ActivityLocationCallback(private val activityId: Int) : LocationCallback() {
+    inner class ActivityLocationCallback(private val activityId: Long) : LocationCallback() {
         override fun onLocationResult(result: LocationResult?) {
             val lastLocation = result?.lastLocation ?: return
             // put values into db
@@ -148,8 +149,8 @@ class NewActivityService : Service() {
                 Coordinates(
                     0,
                     activityId,
-                    lastLocation.latitude,
-                    lastLocation.longitude
+                    lastLocation.longitude,
+                    lastLocation.latitude
                 )
             )
             // https://developer.android.com/reference/androidx/room/Update
