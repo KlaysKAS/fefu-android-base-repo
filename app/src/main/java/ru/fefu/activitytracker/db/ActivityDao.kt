@@ -28,7 +28,7 @@ interface ActivityDao {
     fun dropUnfinishedActivities()
 
     @Query("SELECT * FROM activities WHERE id = :id")
-    fun getActivityById(id: Int): ActivityAndCoordinates
+    fun getActivityById(id: Long): ActivityAndCoordinates
 
     @Query("DELETE FROM coordinates")
     fun dropCoordinates()
@@ -40,5 +40,8 @@ interface ActivityDao {
     fun dropAllActivity()
 
     @Query("SELECT id FROM activities WHERE date_end IS NULL ORDER BY id DESC LIMIT 1")
-    fun getIdUnfinishActivity(): LiveData<Long?>
+    fun getIdUnfinishActivityLive(): LiveData<Long?>
+
+    @Query("SELECT id FROM activities WHERE date_end IS NULL ORDER BY id DESC LIMIT 1")
+    fun getIdUnfinishActivity(): Long?
 }

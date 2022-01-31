@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
@@ -16,8 +15,8 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import ru.fefu.activitytracker.App
 import ru.fefu.activitytracker.R
-import ru.fefu.activitytracker.activities.NavigateActivity
 import ru.fefu.activitytracker.db.entity.Coordinates
+import ru.fefu.activitytracker.welcomeRegLogin.WelcomeScreen
 
 class NewActivityService : Service() {
 
@@ -25,6 +24,7 @@ class NewActivityService : Service() {
         private const val TAG = "ForegroundService"
         private const val CHANNEL_ID = "foreground_service_id"
         private const val EXTRA_ID = "id"
+        var IS_ALIVE = false
 
         const val ACTION_START = "start"
         const val ACTION_CANCEL = "cancel"
@@ -52,18 +52,21 @@ class NewActivityService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        IS_ALIVE = true
         Log.d(TAG, "onCreate")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        Log.d(TAG, "onStartCommand; ${intent?.getIntExtra(EXTRA_ID, -1)}")
+        Log.d(TAG, "onStartCommand; ${intent?.getLongExtra(EXTRA_ID, -1)}")
         if (intent?.action == ACTION_CANCEL) {
+            IS_ALIVE = false
             val actId = App.INSTANCE.db.activityDao().getLastActivity()?:-1
             if (actId > -1)
                 App.INSTANCE.db.activityDao().finishActivity(System.currentTimeMillis(), actId)
-            val intent2 = Intent(this, NavigateActivity::class.java)
-            startActivity(intent2)
+            val closeIntent = Intent(this, WelcomeScreen::class.java)
+            closeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(closeIntent)
             stopLocationUpdates()
             stopForeground(true)
             stopSelf()
@@ -78,6 +81,7 @@ class NewActivityService : Service() {
     override fun onDestroy() {
         locationCallback?.let { fusedLocationClient.removeLocationUpdates(it) }
         Log.d(TAG, "onDestroy")
+        IS_ALIVE = false
         super.onDestroy()
     }
 
@@ -85,7 +89,6 @@ class NewActivityService : Service() {
     private fun startLocationUpdates(id: Long) {
         Log.d("track", "service loc update act, id: $id")
         if (id == -1L) stopSelf()
-        //check if permission denied then stopSelf
         locationCallback?.let { fusedLocationClient.removeLocationUpdates(it) }
         ActivityLocationCallback(id).apply {
             fusedLocationClient.requestLocationUpdates(
@@ -130,21 +133,18 @@ class NewActivityService : Service() {
     }
 
     private fun createChannelIfNeeded() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "Default channel",
-                NotificationManager.IMPORTANCE_LOW
-            )
-            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            manager.createNotificationChannel(channel)
-        }
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "Default channel",
+            NotificationManager.IMPORTANCE_LOW
+        )
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.createNotificationChannel(channel)
     }
 
     inner class ActivityLocationCallback(private val activityId: Long) : LocationCallback() {
         override fun onLocationResult(result: LocationResult?) {
             val lastLocation = result?.lastLocation ?: return
-            // put values into db
             App.INSTANCE.db.activityDao().insertCoordinates(
                 Coordinates(
                     0,
@@ -153,7 +153,6 @@ class NewActivityService : Service() {
                     lastLocation.latitude
                 )
             )
-            // https://developer.android.com/reference/androidx/room/Update
             Log.d(TAG, "Latitude: ${lastLocation.latitude}; Longitude: ${lastLocation.longitude}")
         }
     }

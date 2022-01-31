@@ -21,7 +21,8 @@
             android:exported="true" />
         <activity
             android:name=".activities.NavigateActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTask">
         </activity>
         <activity
             android:name=".welcomeRegLogin.LoginScreen"

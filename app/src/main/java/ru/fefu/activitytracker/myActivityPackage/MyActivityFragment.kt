@@ -1,13 +1,11 @@
 package ru.fefu.activitytracker.myActivityPackage
 
 import android.annotation.SuppressLint
-import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.fefu.activitytracker.ActivitiesEnum
@@ -83,7 +81,10 @@ class MyActivityFragment : Fragment() {
                     .apply {
                         replace(
                             R.id.activity_flow_container,
-                            DetailActivityInfoFragment.newInstance((dataList[pos] as ActivityData).id, 0),
+                            DetailActivityInfoFragment.newInstance(
+                                (dataList[pos] as ActivityData).id,
+                                0
+                            ),
                             "detailedActivity"
                         )
                         addToBackStack(null)
@@ -98,12 +99,29 @@ class MyActivityFragment : Fragment() {
         val hour = seconds / 3600
         val minute = (seconds % 3600) / 60
         val second = seconds % 60
-        return "${twoDigitStr(hour)}:${twoDigitStr(minute)}:${twoDigitStr(second)}"
+        return if (hour > 0) {
+            "$hour ${
+                if (hour < 5L || hour > 20L && hour % 10L > 1L && hour % 10L < 5L) "часов"
+                else "часа"
+            } $minute ${
+                if (minute % 10 == 1L && minute != 11L) "минуту"
+                else if (minute % 10 in 2..4 && (minute > 20 || minute < 10)) "минуты"
+                else "минут"
+            }"
+        } else {
+            "$minute ${
+                if (minute % 10 == 1L && minute != 11L) "минуту"
+                else if (minute % 10 in 2..4 && (minute > 20 || minute < 10)) "минуты"
+                else "минут"
+            } $second ${
+                if (second % 10 == 1L && second != 11L) "секунду"
+                else if (second % 10 in 2..4 && (second > 20 || second < 10)) "секунды"
+                else "секунд"
+            }"
+        }
     }
 
-    fun twoDigitStr(n: Long) = if (n in 0..9) "0$n" else "$n"
-
-    fun createDate(activities: List<ActivityData>) {
+    private fun createDate(activities: List<ActivityData>) {
         val currentDate = LocalDateTime.now()
         var lastDate = DateActivityData("0")
         activities.forEach {
@@ -111,11 +129,12 @@ class MyActivityFragment : Fragment() {
                 currentDate.month == it.date_end.month &&
                 currentDate.dayOfMonth == it.date_end.dayOfMonth
             ) {
-                if (lastDate.date != "Сегодня")
+                if (lastDate.date != "Сегодня") {
                     lastDate = DateActivityData("Сегодня")
-                dataList.add(lastDate)
+                    dataList.add(lastDate)
+                }
             } else {
-                if (lastDate.date != "${month.get(it.date_end.monthValue)} ${it.date_end.year} года") {
+                if (lastDate.date != "${month[it.date_end.monthValue]} ${it.date_end.year} года") {
                     lastDate = DateActivityData(
                         "${month[it.date_end.monthValue]} ${it.date_end.year} года"
                     )

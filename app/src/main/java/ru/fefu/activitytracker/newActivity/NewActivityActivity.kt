@@ -9,7 +9,6 @@ import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -52,14 +51,7 @@ class NewActivityActivity : AppCompatActivity(), ParentFragmentManager {
         setContentView(R.layout.activity_new_activity)
         init()
 
-        supportFragmentManager.beginTransaction().apply {
-            add(
-                R.id.new_activity_flow,
-                NewActivityChooseFragment.newInstance(),
-                "chooseActivity"
-            )
-            commit()
-        }
+        startFrag()
 
         val cardView: CardView = findViewById(R.id.card_with_settings)
         cardView.setBackgroundResource(R.drawable.up_corner_25dp_shape)
@@ -114,13 +106,13 @@ class NewActivityActivity : AppCompatActivity(), ParentFragmentManager {
     private fun initMap() {
         map.minZoomLevel = 4.0
         map.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
-        val eventReciever = object: MapEventsReceiver {
+        val eventReceiver = object: MapEventsReceiver {
             override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean = false
 
             override fun longPressHelper(p: GeoPoint?): Boolean = false
         }
 
-        map.overlays.add(MapEventsOverlay(eventReciever))
+        map.overlays.add(MapEventsOverlay(eventReceiver))
         map.overlayManager.add(polyline)
     }
 
@@ -173,7 +165,7 @@ class NewActivityActivity : AppCompatActivity(), ParentFragmentManager {
     }
 
     private fun startTrack() {
-        App.INSTANCE.db.activityDao().getIdUnfinishActivity().observe(this) { id ->
+        App.INSTANCE.db.activityDao().getIdUnfinishActivityLive().observe(this) { id ->
             if (id != null && id > -1) {
                 NewActivityService.startForeground(this, id)
                 App.INSTANCE.db.activityDao().getCoords(id).observe(this) {
@@ -187,6 +179,29 @@ class NewActivityActivity : AppCompatActivity(), ParentFragmentManager {
                         lastChecked = 0
                     }
                 }
+            }
+
+        }
+    }
+
+    private fun startFrag() {
+        if (App.INSTANCE.db.activityDao().getIdUnfinishActivity() != null) {
+            supportFragmentManager.beginTransaction().apply {
+                add(
+                    R.id.new_activity_flow,
+                    NewActivityCreateFragment.newInstance(-1, 1),
+                    "createActivity"
+                )
+                commit()
+            }
+        } else {
+            supportFragmentManager.beginTransaction().apply {
+                add(
+                    R.id.new_activity_flow,
+                    NewActivityChooseFragment.newInstance(),
+                    "chooseActivity"
+                )
+                commit()
             }
         }
     }

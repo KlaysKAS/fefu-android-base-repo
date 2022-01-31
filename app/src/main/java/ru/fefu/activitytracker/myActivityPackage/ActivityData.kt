@@ -4,7 +4,7 @@ import ru.fefu.activitytracker.activities.CardAbstract
 import java.time.LocalDateTime
 
 data class ActivityData(
-    val id: Int = 0,
+    val id: Long = 0,
     val user: String = "",
     val distance: String,
     val duration: String,

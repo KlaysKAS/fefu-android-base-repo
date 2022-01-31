@@ -13,11 +13,9 @@ import ru.fefu.activitytracker.ActivitiesEnum
 import ru.fefu.activitytracker.App
 import ru.fefu.activitytracker.ParentFragmentManager
 import ru.fefu.activitytracker.R
-import ru.fefu.activitytracker.dateActivityPackage.DateActivityData
 import ru.fefu.activitytracker.gps.CoordToDistance
 import ru.fefu.activitytracker.myActivityPackage.ActivityData
 import ru.fefu.activitytracker.usersActivityPackage.UsersActivityData
-import java.lang.Long.max
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
@@ -28,7 +26,7 @@ private const val ARG_ACTIVITY_ID = "activity_id"
 
 class DetailActivityInfoFragment : Fragment(R.layout.fragment_detail_activity_info) {
     private lateinit var toolbar: Toolbar
-    private var activityId = 0
+    private var activityId = 0L
     private var mode = 0
     private lateinit var data: ActivityData
 
@@ -60,7 +58,7 @@ class DetailActivityInfoFragment : Fragment(R.layout.fragment_detail_activity_in
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            activityId = it.getInt(ARG_ACTIVITY_ID)
+            activityId = it.getLong(ARG_ACTIVITY_ID)
             mode = it.getInt("mode")
         }
     }
@@ -148,11 +146,11 @@ class DetailActivityInfoFragment : Fragment(R.layout.fragment_detail_activity_in
             )
         } else {
             data = ActivityData(
-                user = usersData[activityId].username,
-                distance = usersData[activityId].distance,
-                duration = usersData[activityId].duration,
-                type = usersData[activityId].type,
-                comment = usersData[activityId].comment,
+                user = usersData[activityId.toInt()].username,
+                distance = usersData[activityId.toInt()].distance,
+                duration = usersData[activityId.toInt()].duration,
+                type = usersData[activityId.toInt()].type,
+                comment = usersData[activityId.toInt()].comment,
                 date_start = LocalDateTime.now().minusHours(20),
                 date_end = LocalDateTime.now().minusHours(14)
             )
@@ -162,14 +160,12 @@ class DetailActivityInfoFragment : Fragment(R.layout.fragment_detail_activity_in
 
     private fun setDistance(dist: Double): String {
         if (!dist.isNaN()) {
-            val s =
-                if (dist < 1000) {
-                    "${dist.roundToInt()} м"
-                } else {
-                    val d: Double = dist / 1000.0
-                    "${d.format(2)} км"
-                }
-            return s
+            return if (dist < 1000) {
+                "${dist.roundToInt()} м"
+            } else {
+                val d: Double = dist / 1000.0
+                "${d.format(2)} км"
+            }
         }
         return "0 м"
     }
@@ -179,19 +175,36 @@ class DetailActivityInfoFragment : Fragment(R.layout.fragment_detail_activity_in
         val hour = seconds / 3600
         val minute = (seconds % 3600) / 60
         val second = seconds % 60
-        val str = "${twoDigitStr(hour)}:${twoDigitStr(minute)}:${twoDigitStr(second)}"
-        return str
+        return if (hour > 0) {
+            "$hour ${
+                if (hour < 5L || hour > 20L && hour % 10L > 1L && hour % 10L < 5L) "часов"
+                else "часа"
+            } $minute ${
+                if (minute % 10 == 1L && minute != 11L) "минуту"
+                else if (minute % 10 in 2..4 && (minute > 20 || minute < 10)) "минуты"
+                else "минут"
+            }"
+        } else {
+            "$minute ${
+                if (minute % 10 == 1L && minute != 11L) "минуту"
+                else if (minute % 10 in 2..4 && (minute > 20 || minute < 10)) "минуты"
+                else "минут"
+            } $second ${
+                if (second % 10 == 1L && second != 11L) "секунду"
+                else if (second % 10 in 2..4 && (second > 20 || second < 10)) "секунды"
+                else "секунд"
+            }"
+        }
     }
 
-    fun twoDigitStr(n: Long) = if (n in 0..9) "0$n" else "$n"
 
-    fun Double.format(digits: Int) = "%.${digits}f".format(this)
+    private fun Double.format(digits: Int) = "%.${digits}f".format(this)
 
     companion object {
         @JvmStatic
-        fun newInstance(id: Int, mode: Int) = DetailActivityInfoFragment().apply {
+        fun newInstance(id: Long, mode: Int) = DetailActivityInfoFragment().apply {
             arguments = Bundle().apply {
-                putInt(ARG_ACTIVITY_ID, id)
+                putLong(ARG_ACTIVITY_ID, id)
                 putInt("mode", mode)
             }
         }

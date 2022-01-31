@@ -4,7 +4,7 @@ import androidx.room.*
 
 @Entity
 data class Activities(
-    @PrimaryKey(autoGenerate = true) val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(name = "username") val userName: String,
     @ColumnInfo(name = "activity_type") val type: Int,
     @ColumnInfo(name = "date_start") val dateStart: Long,

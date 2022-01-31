@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import ru.fefu.activitytracker.ActivitiesEnum
 import ru.fefu.activitytracker.App
 import ru.fefu.activitytracker.R
 import ru.fefu.activitytracker.db.entity.Activities
@@ -15,18 +16,21 @@ import ru.fefu.activitytracker.gps.CoordToDistance
 import kotlin.math.roundToInt
 
 class NewActivityCreateFragment : Fragment() {
-    private var type_id: Int = 0
+    private var typeId: Int = 0
+    private var mode: Int = 0
     private var activityId: Long = -1
     private var lastChecked = -1
 
     private lateinit var distanceView: TextView
+    private lateinit var typeView: TextView
 
     private var distance: Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            type_id = it.getInt("type")
+            typeId = it.getInt("type")
+            mode = it.getInt("mode")
         }
     }
 
@@ -41,27 +45,30 @@ class NewActivityCreateFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         distanceView = view.findViewById(R.id.new_activity_create_distance)
+        typeView = view.findViewById(R.id.new_activity_create_type)
 
-        if (type_id > -1) {
-            App.INSTANCE.db.activityDao().insert(
-                Activities(
-                    id = 0,
-                    userName = "",
-                    type = type_id,
-                    dateStart = System.currentTimeMillis()
+        if (mode == 0) {
+            if (typeId > -1) {
+                App.INSTANCE.db.activityDao().insert(
+                    Activities(
+                        id = 0,
+                        userName = "",
+                        type = typeId,
+                        dateStart = System.currentTimeMillis()
+                    )
                 )
-            )
+            }
         }
         getCurActivity()
 
         val finishButton: ImageButton = view.findViewById(R.id.new_activity_finish)
         finishButton.setOnClickListener {
-            finishActivity()
+            requireActivity().finish()
             parentFragmentManager.popBackStack()
             val intent = Intent(activity, NewActivityService::class.java).apply {
                 action = NewActivityService.ACTION_CANCEL
             }
-            activity?.startService(intent)
+            requireActivity().startService(intent)
         }
     }
 
@@ -82,6 +89,9 @@ class NewActivityCreateFragment : Fragment() {
     private fun getCurActivity() {
         activityId = App.INSTANCE.db.activityDao().getLastActivity() ?: -1
         if (activityId > -1) {
+            typeView.text = ActivitiesEnum
+                .values()[App.INSTANCE.db.activityDao().getActivityById(activityId).activity.type]
+                .type
             App.INSTANCE.db.activityDao().getCoords(activityId).observe(viewLifecycleOwner) {
                 if (lastChecked > -1) {
                     for (i in lastChecked until it.size)
@@ -98,15 +108,12 @@ class NewActivityCreateFragment : Fragment() {
         }
     }
 
-    private fun finishActivity() {
-        App.INSTANCE.db.activityDao().finishActivity(System.currentTimeMillis(), activityId)
-    }
-
     companion object {
         @JvmStatic
-        fun newInstance(type_id: Int) = NewActivityCreateFragment().apply {
+        fun newInstance(type_id: Int, mode: Int = 0) = NewActivityCreateFragment().apply {
             arguments = Bundle().apply {
                 putInt("type", type_id)
+                putInt("mode", mode)
             }
         }
     }
