@@ -13,19 +13,20 @@ import ru.fefu.activitytracker.ActivitiesEnum
 import ru.fefu.activitytracker.App
 import ru.fefu.activitytracker.ParentFragmentManager
 import ru.fefu.activitytracker.R
-import ru.fefu.activitytracker.dateActivityPackage.DateActivityData
+import ru.fefu.activitytracker.gps.CoordToDistance
 import ru.fefu.activitytracker.myActivityPackage.ActivityData
 import ru.fefu.activitytracker.usersActivityPackage.UsersActivityData
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import kotlin.math.roundToInt
 
 private const val ARG_ACTIVITY_ID = "activity_id"
 
 class DetailActivityInfoFragment : Fragment(R.layout.fragment_detail_activity_info) {
     private lateinit var toolbar: Toolbar
-    private var activityId = 0
+    private var activityId = 0L
     private var mode = 0
     private lateinit var data: ActivityData
 
@@ -57,7 +58,7 @@ class DetailActivityInfoFragment : Fragment(R.layout.fragment_detail_activity_in
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            activityId = it.getInt(ARG_ACTIVITY_ID)
+            activityId = it.getLong(ARG_ACTIVITY_ID)
             mode = it.getInt("mode")
         }
     }
@@ -92,7 +93,8 @@ class DetailActivityInfoFragment : Fragment(R.layout.fragment_detail_activity_in
         val dateEndView = view?.findViewById<TextView>(R.id.detailed_activity_endTime)
         val dateView = view?.findViewById<TextView>(R.id.detailed_activity_date)
 
-        val startTime = "%02d".format(data.date_start.hour) + ":" + "%02d".format(data.date_start.minute)
+        val startTime =
+            "%02d".format(data.date_start.hour) + ":" + "%02d".format(data.date_start.minute)
         val endTime = "%02d".format(data.date_end.hour) + ":" + "%02d".format(data.date_end.minute)
 
         toolbar.title = data.type
@@ -111,7 +113,8 @@ class DetailActivityInfoFragment : Fragment(R.layout.fragment_detail_activity_in
 
         if (LocalDateTime.now().equals(data.date_end)) {
             dateView?.text =
-                Duration.between(data.date_end, LocalDateTime.now()).toHours().toString() + "ч. назад"
+                Duration.between(data.date_end, LocalDateTime.now()).toHours()
+                    .toString() + "ч. назад"
         } else {
             dateView?.text =
                 "${data.date_end.dayOfMonth}.${data.date_end.monthValue}.${data.date_end.year}"
@@ -121,28 +124,33 @@ class DetailActivityInfoFragment : Fragment(R.layout.fragment_detail_activity_in
     private fun getAndBindActivity() {
         if (mode == 0) {
             val activities = App.INSTANCE.db.activityDao().getActivityById(activityId)
+            val dateStart = Instant
+                .ofEpochMilli(activities.activity.dateStart)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime()
+            val dateEnd = Instant
+                .ofEpochMilli(activities.activity.dateEnd ?: 0)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime()
+            val time = activities.activity.dateEnd!! - activities.activity.dateStart
+
             data = ActivityData(
-                id = activities.id,
-                distance = "4 км",
-                duration = "1 ч",
-                type = ActivitiesEnum.values()[activities.type].type,
-                date_start = Instant
-                    .ofEpochMilli(activities.dateStart)
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDateTime(),
-                date_end = Instant
-                    .ofEpochMilli(activities.dateEnd)
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDateTime(),
+                id = activities.activity.id,
+                distance = setDistance(
+                    CoordToDistance.getDistanceFromLatLonInM(activities.coordinates)
+                ),
+                duration = setDuration(time),
+                type = ActivitiesEnum.values()[activities.activity.type].type,
+                date_start = dateStart,
+                date_end = dateEnd
             )
-        }
-        else {
+        } else {
             data = ActivityData(
-                user = usersData[activityId].username,
-                distance = usersData[activityId].distance,
-                duration = usersData[activityId].duration,
-                type = usersData[activityId].type,
-                comment = usersData[activityId].comment,
+                user = usersData[activityId.toInt()].username,
+                distance = usersData[activityId.toInt()].distance,
+                duration = usersData[activityId.toInt()].duration,
+                type = usersData[activityId.toInt()].type,
+                comment = usersData[activityId.toInt()].comment,
                 date_start = LocalDateTime.now().minusHours(20),
                 date_end = LocalDateTime.now().minusHours(14)
             )
@@ -150,11 +158,53 @@ class DetailActivityInfoFragment : Fragment(R.layout.fragment_detail_activity_in
         bind()
     }
 
+    private fun setDistance(dist: Double): String {
+        if (!dist.isNaN()) {
+            return if (dist < 1000) {
+                "${dist.roundToInt()} м"
+            } else {
+                val d: Double = dist / 1000.0
+                "${d.format(2)} км"
+            }
+        }
+        return "0 м"
+    }
+
+    private fun setDuration(time: Long): String {
+        val seconds = time / 1000
+        val hour = seconds / 3600
+        val minute = (seconds % 3600) / 60
+        val second = seconds % 60
+        return if (hour > 0) {
+            "$hour ${
+                if (hour < 5L || hour > 20L && hour % 10L > 1L && hour % 10L < 5L) "часов"
+                else "часа"
+            } $minute ${
+                if (minute % 10 == 1L && minute != 11L) "минуту"
+                else if (minute % 10 in 2..4 && (minute > 20 || minute < 10)) "минуты"
+                else "минут"
+            }"
+        } else {
+            "$minute ${
+                if (minute % 10 == 1L && minute != 11L) "минуту"
+                else if (minute % 10 in 2..4 && (minute > 20 || minute < 10)) "минуты"
+                else "минут"
+            } $second ${
+                if (second % 10 == 1L && second != 11L) "секунду"
+                else if (second % 10 in 2..4 && (second > 20 || second < 10)) "секунды"
+                else "секунд"
+            }"
+        }
+    }
+
+
+    private fun Double.format(digits: Int) = "%.${digits}f".format(this)
+
     companion object {
         @JvmStatic
-        fun newInstance(id: Int, mode: Int) = DetailActivityInfoFragment().apply {
+        fun newInstance(id: Long, mode: Int) = DetailActivityInfoFragment().apply {
             arguments = Bundle().apply {
-                putInt(ARG_ACTIVITY_ID, id)
+                putLong(ARG_ACTIVITY_ID, id)
                 putInt("mode", mode)
             }
         }

@@ -1,20 +1,17 @@
 package ru.fefu.activitytracker.newActivity
 
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import ru.fefu.activitytracker.R
 
 class NewActivityAdapter(private val data: List<NewActivityData>) :
     RecyclerView.Adapter<NewActivityAdapter.NewActivityHolder>() {
     private var items = mutableListOf<View>()
-    var selected = -1
+    var selected = 0
 
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewActivityAdapter.NewActivityHolder {
@@ -35,6 +32,7 @@ class NewActivityAdapter(private val data: List<NewActivityData>) :
         private val ivType: TextView = itemView.findViewById(R.id.new_activity_type)
 
         init {
+            items[selected].isSelected = true
             itemView.setOnClickListener {
                 var count = 0
                 items.forEach { views ->

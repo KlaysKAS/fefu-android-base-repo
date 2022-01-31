@@ -66,7 +66,7 @@ class UsersActivityFragment  : Fragment() {
                     .apply {
                         replace(
                             R.id.activity_flow_container,
-                            DetailActivityInfoFragment.newInstance(pos - 1, 1)
+                            DetailActivityInfoFragment.newInstance((pos - 1).toLong(), 1)
                         )
                         addToBackStack(null)
                         commit()
